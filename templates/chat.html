@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ollama Chatbot</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='styles.css') }}"
+    />
+  </head>
+  <body>
+    <div id="chat-container">
+      <div id="chat-box"></div>
+      <div id="input-container">
+        <input type="text" id="user-input" placeholder="Type a message..." />
+        <button id="recordStopButton"></button>
+        <button id="send-button">Send</button>
+      </div>
+    </div>
+    <script src="https://cdn.rawgit.com/mattdiamond/Recorderjs/08e7abd9/dist/recorder.js"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    <script>
+      document.getElementById("send-button").onclick = function () {
+        var userInput = document.getElementById("user-input").value;
+        fetch("/chat", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ message: userInput }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            var chatBox = document.getElementById("chat-box");
+            var userMessage = document.createElement("div");
+            userMessage.className = "user-message";
+            userMessage.innerText = userInput;
+            chatBox.appendChild(userMessage);
+
+            var botMessage = document.createElement("div");
+            botMessage.className = "bot-message";
+            botMessage.innerText = data.message;
+            chatBox.appendChild(botMessage);
+
+            document.getElementById("user-input").value = "";
+            chatBox.scrollTop = chatBox.scrollHeight;
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+      };
+
+      document
+        .getElementById("user-input")
+        .addEventListener("keypress", function (e) {
+          if (e.key === "Enter") {
+            document.getElementById("send-button").click();
+          }
+        });
+    </script>
+  </body>
+</html>

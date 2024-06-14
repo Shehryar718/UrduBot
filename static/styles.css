@@ -1,0 +1,130 @@
+body {
+  background-color: #1e1e1e;
+  color: #ffffff;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+#chat-container {
+  width: 80%;
+  max-width: 800px;
+  margin: auto;
+  border: 1px solid #333;
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: #2c2c2c;
+}
+
+#chat-box {
+  height: 60vh;
+  padding: 20px;
+  overflow-y: scroll;
+  background-color: #3c3c3c;
+  border-bottom: 1px solid #444;
+}
+
+.user-message {
+  text-align: right;
+  margin: 10px 0;
+  padding: 10px;
+  background-color: #737373;
+  color: white;
+  border-radius: 10px;
+  max-width: 70%;
+  align-self: flex-end;
+  margin-left: auto;
+}
+
+.bot-message {
+  text-align: left;
+  margin: 10px 0;
+  padding: 10px;
+  background-color: #444;
+  color: white;
+  border-radius: 10px;
+  max-width: 70%;
+  align-self: flex-start;
+  margin-right: auto;
+}
+
+#input-container {
+  display: flex;
+  padding: 20px;
+  background-color: #2c2c2c;
+}
+
+#user-input {
+  flex-grow: 1;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #555;
+  background-color: #444;
+  color: #fff;
+  /* margin-right: 10px; */
+}
+
+#user-input::placeholder {
+  color: #999;
+}
+
+#send-button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  background-color: #737373;
+  color: white;
+  cursor: pointer;
+}
+
+#send-button:hover {
+  background-color: #a6a6a6;
+}
+/* 
+button {
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 5px;
+  margin: 5px;
+  outline: none;
+}
+
+button:disabled {
+  background-color: #cccccc;
+} */
+
+/* Styles for the recording button */
+#recordStopButton {
+  width: 20px;
+  height: 20px;
+  font-size: 0;
+  background-color: darkred;
+  border: 0;
+  border-radius: 20px;
+  margin: 10px;
+}
+
+#recordStopButton.Rec {
+  animation: pulse 1.5s infinite linear;
+  background-color: red;
+}
+
+#recordStopButton.notRec {
+  background-color: darkred;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0px 0px 5px 0px rgba(173, 0, 0, 0.3);
+  }
+  65% {
+    box-shadow: 0px 0px 5px 8px rgba(173, 0, 0, 0.3);
+  }
+  90% {
+    box-shadow: 0px 0px 5px 8px rgba(173, 0, 0, 0);
+  }
+}
