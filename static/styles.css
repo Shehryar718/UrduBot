@@ -65,7 +65,6 @@ body {
   border: 1px solid #555;
   background-color: #444;
   color: #fff;
-  /* margin-right: 10px; */
 }
 
 #user-input::placeholder {
@@ -84,18 +83,6 @@ body {
 #send-button:hover {
   background-color: #a6a6a6;
 }
-/* 
-button {
-  padding: 10px;
-  font-size: 16px;
-  border-radius: 5px;
-  margin: 5px;
-  outline: none;
-}
-
-button:disabled {
-  background-color: #cccccc;
-} */
 
 /* Styles for the recording button */
 #recordStopButton {
