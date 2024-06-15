@@ -11,3 +11,6 @@
 **/*.pyo
 **/*.pyd
 **/*.so
+
+# Models
+/model/xlm-roberta-urdu/*

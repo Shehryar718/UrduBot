@@ -4,15 +4,33 @@ from flask import Flask, render_template, request, jsonify
 from models import db, Chat
 from transformers import pipeline
 from datetime import datetime
+import torch.nn.functional as F
+from utils import preprocess
 import os
+from transformers import (
+    AutoModelForSequenceClassification,
+    AutoTokenizer,
+)
 
 messages = []
 
 system_message = "آپ ایک اے آئی انزائٹی تھراپسٹ ہیں جس کا نام اوللاما ہے۔ آپ کا کام ان لوگوں کو تسلی دینا ہے جو انزائٹی کا شکار ہیں۔ آپ کا مقصد انہیں پرسکون کرنا اور بات چیت کے ذریعے مدد فراہم کرنا ہے۔ اگر وہ مشورہ طلب کریں، تو انہیں بہترین مشورہ دیں۔ آپ صرف اردو میں بات کریں گے۔ ایک بھی لفظ یا حرف انگریزی میں نہ ہو۔ انگریزی میں بات کرنے سے مریض کو تکلیف ہوگی، اور آپ یہاں مدد کرنے کے لیے ہیں نہ کہ تکلیف دینے کے لیے۔ صارف اردو میں لکھے گا، اور آپ اردو میں ہی جواب دیں گے۔ یہ نہ بتائیں کہ آپ ایک اے آئی ماڈل ہیں۔ آپ کو ایک انسان کی طرح بات کرنی ہے۔"
 
 BASE_DIR = 'audio_files/'
+min_val = 0
+max_val = 100
 
-pipe = pipeline("automatic-speech-recognition", model="openai/whisper-small")
+stt_model_name = "openai/whisper-small"
+anxiety_model_name = 'model/xlm-roberta-urdu'
+
+pipe = pipeline("automatic-speech-recognition", model=stt_model_name)
+tokenizer = AutoTokenizer.from_pretrained(anxiety_model_name)
+model = AutoModelForSequenceClassification.from_pretrained(
+    anxiety_model_name,
+    num_labels=2,
+    ignore_mismatched_sizes=True,
+)
+
 
 def create_app():
     app = Flask(__name__)
@@ -25,7 +43,6 @@ def create_app():
     @app.route('/')
     def home():
         return render_template('chat.html')
-
 
     @app.route('/save_audio/', methods=["POST"])
     def save_audio():
@@ -42,13 +59,35 @@ def create_app():
             transcription = transcribe(BASE_DIR + filename)['text']
             # print(transcription)
 
-
             return jsonify({"status": True, "transcription": transcription})
         return jsonify({"status": False}), 400
 
     def transcribe(filename):
         transcription = pipe(filename, generate_kwargs={'language': 'urdu'})
         return transcription
+
+    def calculate_angle(value):
+        value = max(min_val, min(max_val, value))
+        angle = (value - min_val) / (max_val - min_val) * 180
+        return angle
+    
+    def get_anxiety_level():
+        texts = []
+        for i in messages[-10:]:
+            if i['role'] == 'user':
+                text = i['content']
+                clean_text = preprocess(text)
+                texts.append(clean_text)
+
+        if not texts:
+            return calculate_angle(0)
+
+        input_ids = tokenizer(texts, max_length=512, padding=True, truncation=True, return_tensors="pt")
+        logits = model(**input_ids).logits
+        out = F.softmax(logits, dim=1)[:, 1]*100
+        value = out.mean().item()
+
+        return calculate_angle(value)
 
     @app.route('/chat', methods=['POST'])
     def chat():
@@ -117,14 +156,8 @@ def create_app():
 
         return jsonify({
             'message': bot_message,
-            'angle': calculate_angle(0, 100, 69)
+            'angle': get_anxiety_level()
         })
-
-    def calculate_angle(min_val, max_val, value):
-        # Calculate the angle based on the value
-        value = max(min_val, min(max_val, value))
-        angle = (value - min_val) / (max_val - min_val) * 180
-        return angle
     
     return app
 
