@@ -115,8 +115,17 @@ def create_app():
         db.session.add(chat)
         db.session.commit()
 
-        return jsonify({'message': bot_message})
+        return jsonify({
+            'message': bot_message,
+            'angle': calculate_angle(0, 100, 69)
+        })
 
+    def calculate_angle(min_val, max_val, value):
+        # Calculate the angle based on the value
+        value = max(min_val, min(max_val, value))
+        angle = (value - min_val) / (max_val - min_val) * 180
+        return angle
+    
     return app
 
 if __name__ == '__main__':

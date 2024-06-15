@@ -18,6 +18,24 @@
         <button id="send-button">Send</button>
       </div>
     </div>
+    <!-- <h1 class="wrapper-header">Anxiety Meter</h1> -->
+    <div class="wrapper">
+      <div class="gauge">
+        <div class="slice-colors">
+          <div class="st slice-item"></div>
+          <div class="st slice-item"></div>
+          <div class="st slice-item"></div>
+          <div class="st slice-item"></div>
+          <div class="st slice-item"></div>
+        </div>
+        <div class="needle" id="gauge-needle"></div>
+        <div class="gauge-center"></div>
+      </div>
+      <div class="gauge-labels">
+        <span class="min-label">0</span>
+        <span class="max-label">100</span>
+      </div>
+    </div>
     <script src="https://cdn.rawgit.com/mattdiamond/Recorderjs/08e7abd9/dist/recorder.js"></script>
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
     <script>
@@ -43,6 +61,10 @@
             botMessage.innerText = data.message;
             chatBox.appendChild(botMessage);
 
+            // Update gauge needle angle
+            document.getElementById(
+              "gauge-needle"
+            ).style.transform = `rotate(${data.angle}deg)`;
             document.getElementById("user-input").value = "";
             chatBox.scrollTop = chatBox.scrollHeight;
           })

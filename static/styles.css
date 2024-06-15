@@ -115,3 +115,135 @@ body {
     box-shadow: 0px 0px 5px 8px rgba(173, 0, 0, 0);
   }
 }
+
+.wrapper {
+  display: table;
+  margin: 0 auto;
+  background: rgba(21, 34, 46, 0.25);
+  padding: 35px 40px 40px;
+  border-radius: 6px;
+  box-shadow: 0 0 1px 0 rgba(255, 255, 255, 0.32), 0 1px 9px -1px #15222e;
+  position: relative;
+  margin-right: 10%;
+}
+
+.wrapper-header {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.74);
+  margin: 30px 0 15px;
+  font-weight: normal;
+}
+
+.gauge {
+  background: #e7e7e7;
+  box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.09),
+    0 0 35px 5px rgba(255, 255, 255, 0.29);
+  width: 200px;
+  height: 100px;
+  border-radius: 100px 100px 0 0;
+  position: relative;
+  overflow: hidden;
+  -webkit-transform-style: flat;
+  -webkit-transform: translateZ(0px);
+}
+
+.gauge-center {
+  content: "";
+  width: 60%;
+  height: 60%;
+  background: #15222e;
+  border-radius: 100px 100px 0 0;
+  position: absolute;
+  box-shadow: 0 -13px 15px -10px rgba(0, 0, 0, 0.28);
+  right: 20%;
+  bottom: 0;
+}
+
+.gauge-center::before {
+  content: "Anxiety";
+  font-size: 1.2em;
+  width: 100%;
+  padding-top: 20%;
+  text-align: center;
+  display: block;
+  color: #fff;
+}
+
+.needle {
+  width: 78px;
+  height: 7px;
+  background: #15222e;
+  border-bottom-left-radius: 100%;
+  border-bottom-right-radius: 5px;
+  border-top-left-radius: 100%;
+  border-top-right-radius: 5px;
+  position: absolute;
+  bottom: 4px;
+  left: 20px;
+  transform-origin: 100% 4px;
+  box-shadow: 0 2px 2px 1px rgba(0, 0, 0, 0.38);
+}
+
+.slice-colors .st {
+  position: absolute;
+  bottom: 0;
+  width: 60px;
+  height: 0;
+  border-bottom: 80px solid #000;
+  border-left: 12px solid transparent;
+  border-right: 12px solid transparent;
+}
+
+.slice-colors .st.slice-item:nth-child(1) {
+  border-bottom-color: #1eaa59;
+  left: -2px;
+}
+
+.slice-colors .st.slice-item:nth-child(2) {
+  border-bottom-color: #9baa1e;
+  transform: rotate(135deg);
+  transform-origin: right;
+  top: 12px;
+  left: -65px;
+}
+
+.slice-colors .st.slice-item:nth-child(3) {
+  border-bottom-color: #f1c40f;
+  transform: rotate(179deg);
+  transform-origin: right;
+  top: -20px;
+  left: -62px;
+  border-bottom-width: 90px;
+  border-left-width: 45px;
+  border-right-width: 45px;
+  width: 18px;
+}
+
+.slice-colors .st.slice-item:nth-child(4) {
+  border-bottom-color: #e67e22;
+  transform: rotate(219deg);
+  transform-origin: right;
+  top: -23px;
+  left: 43px;
+}
+
+.slice-colors .st.slice-item:nth-child(5) {
+  border-bottom-color: #e84c3d;
+  transform: rotate(240deg);
+  transform-origin: right;
+  right: 52px;
+}
+
+.gauge-labels {
+  width: 200px;
+  display: flex;
+  justify-content: space-between;
+  position: absolute;
+  top: 150px;
+}
+
+.gauge-labels .min-label,
+.gauge-labels .max-label {
+  font-size: 0.9em;
+  color: #fff;
+}
