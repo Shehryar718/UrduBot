@@ -1,7 +1,5 @@
 # Urdu Bot
 
----
-
 ![Urdu Bot](assets/UI.png)
 
 ## Overview
