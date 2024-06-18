@@ -61,6 +61,12 @@
             botMessage.innerText = data.message;
             chatBox.appendChild(botMessage);
 
+            var speakerIcon = document.createElement("img");
+            speakerIcon.src =
+              "{{ url_for('static', filename='images/speaker-icon.png') }}";
+            speakerIcon.className = "speaker-icon";
+            botMessage.appendChild(speakerIcon);
+
             // Update gauge needle angle
             document.getElementById(
               "gauge-needle"

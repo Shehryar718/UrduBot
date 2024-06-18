@@ -50,6 +50,16 @@ body {
   max-width: 70%;
   align-self: flex-start;
   margin-right: auto;
+  position: relative; /* Needed for the speaker icon positioning */
+}
+
+.speaker-icon {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
 }
 
 #input-container {
