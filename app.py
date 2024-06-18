@@ -1,16 +1,25 @@
-import json
 import os
+import io
+import json
+import torch
+import base64
 import requests
-from flask import Flask, render_template, request, jsonify
+from utils import preprocess
 from database import db, Chat
-from transformers import pipeline
 from datetime import datetime
 import torch.nn.functional as F
-from utils import preprocess
-import torch
+from transformers import pipeline
+import soundfile as sf
+from flask import (
+    Flask, 
+    request, 
+    jsonify,
+    render_template, 
+)
 from transformers import (
-    AutoModelForSequenceClassification,
+    VitsModel,
     AutoTokenizer,
+    AutoModelForSequenceClassification,
 )
 
 messages = []
@@ -20,26 +29,29 @@ system_message = "آپ ایک اے آئی انزائٹی تھراپسٹ ہیں �
 BASE_DIR = 'audio_files/'
 min_val = 0
 max_val = 100
+TTS_SAMPLE_RATE = 18_000
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-stt_model_name = "openai/whisper-small"
+stt_model_name = 'openai/whisper-small'
 anxiety_model_name = 'model/xlm-roberta-urdu'
+tts_model_name = 'facebook/mms-tts-urd-script_arabic'
 
 pipe = pipeline("automatic-speech-recognition", model=stt_model_name, device=device)
 tokenizer = AutoTokenizer.from_pretrained(anxiety_model_name)
+tts_tokenizer = AutoTokenizer.from_pretrained(tts_model_name)
 model = AutoModelForSequenceClassification.from_pretrained(
     anxiety_model_name,
     num_labels=2,
     ignore_mismatched_sizes=True,
 ).to(device)
+tts_model = VitsModel.from_pretrained(tts_model_name).to(device)
 
 def create_app():
     app = Flask(__name__)
     app.config.from_object('config.Config')
     db.init_app(app)
 
-    # Ensure the directory for the database exists
     os.makedirs(os.path.dirname(app.config['SQLALCHEMY_DATABASE_URI'].replace('sqlite:///', '')), exist_ok=True)
 
     with app.app_context():
@@ -51,13 +63,12 @@ def create_app():
     def home():
         return render_template('chat.html')
 
-    @app.route('/save_audio/', methods=["POST"])
+    @app.route('/save_audio', methods=["POST"])
     def save_audio():
         if 'audio_data' in request.files:
             file = request.files['audio_data']
             filename = datetime.now().strftime("%m-%d-%Y-%H-%M-%S") + '.wav'
 
-            # Ensure the directory exists before saving the file
             os.makedirs(BASE_DIR, exist_ok=True)
 
             file.save(os.path.join(BASE_DIR, filename))
@@ -92,6 +103,22 @@ def create_app():
         value = out.mean().item()
 
         return calculate_angle(value)
+
+    @app.route('/speak', methods=["POST"])
+    @torch.no_grad()
+    def speak():
+        msg = request.json.get('message')
+        inputs = tts_tokenizer(msg, return_tensors="pt").to(device)
+        output = tts_model(**inputs).waveform
+
+        waveform_np = output.squeeze().cpu().numpy()
+        audio_bytes = io.BytesIO()
+        sf.write(audio_bytes, waveform_np, samplerate=TTS_SAMPLE_RATE, format='WAV')
+        audio_bytes.seek(0)
+        
+        audio_base64 = base64.b64encode(audio_bytes.read()).decode('utf-8')
+
+        return jsonify({"status": True, "audio": audio_base64})
 
     @app.route('/chat', methods=['POST'])
     def chat():
@@ -139,7 +166,7 @@ def create_app():
                 full_text += content
 
         bot_message = full_text.strip()
-
+        
         messages.append({
             "role": "assistant",
             "content": bot_message

@@ -62,7 +62,7 @@ function sendAudioData(blob) {
   var fd = new FormData();
   fd.append("audio_data", blob, "audio.wav");
 
-  fetch("/save_audio/", {
+  fetch("/save_audio", {
     method: "POST",
     body: fd,
   })
@@ -112,6 +112,34 @@ function sendMessageToChat(transcription) {
       botMessage.className = "bot-message";
       botMessage.innerText = data.message;
       chatBox.appendChild(botMessage);
+
+      // Add speaker icon
+      var speakerIcon = document.createElement("img");
+      speakerIcon.src = speakerIconUrl;
+      speakerIcon.className = "speaker-icon";
+      botMessage.appendChild(speakerIcon);
+
+      speakerIcon.addEventListener("click", function () {
+        fetch("/speak", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ message: data.message }),
+        })
+          .then((response) => response.json())
+          .then((speakData) => {
+            var audio = new Audio("data:audio/wav;base64," + speakData.audio);
+            audio.play();
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+      });
+
+      document.getElementById(
+        "gauge-needle"
+      ).style.transform = `rotate(${data.angle}deg)`;
 
       // Clear input and scroll to bottom
       document.getElementById("user-input").value = "";

@@ -8,9 +8,10 @@ Urdu Bot is an Urdu-language chatbot that utilizes the Llama3 model through Olla
 
 ## Features
 
-- Text input
-- Speech input
-- Real-time Anxiety Meter
+- Text Input
+- Speech Input
+- Real Time Anxiety Meter
+- Text To Speech
 
 ## Directory Structure
 

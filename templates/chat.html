@@ -37,6 +37,10 @@
       </div>
     </div>
     <script src="https://cdn.rawgit.com/mattdiamond/Recorderjs/08e7abd9/dist/recorder.js"></script>
+    <script>
+      var speakerIconUrl =
+        "{{ url_for('static', filename='images/speaker-icon.png') }}";
+    </script>
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
     <script>
       document.getElementById("send-button").onclick = function () {
@@ -67,7 +71,26 @@
             speakerIcon.className = "speaker-icon";
             botMessage.appendChild(speakerIcon);
 
-            // Update gauge needle angle
+            speakerIcon.addEventListener("click", function () {
+              fetch("/speak", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ message: data.message }),
+              })
+                .then((response) => response.json())
+                .then((speakData) => {
+                  var audio = new Audio(
+                    "data:audio/wav;base64," + speakData.audio
+                  );
+                  audio.play();
+                })
+                .catch((error) => {
+                  console.error("Error:", error);
+                });
+            });
+
             document.getElementById(
               "gauge-needle"
             ).style.transform = `rotate(${data.angle}deg)`;
