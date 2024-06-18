@@ -113,12 +113,13 @@ function sendMessageToChat(transcription) {
       botMessage.innerText = data.message;
       chatBox.appendChild(botMessage);
 
-      // Add speaker icon
+      // Add speaker icon (replace with your actual speaker icon URL)
       var speakerIcon = document.createElement("img");
       speakerIcon.src = speakerIconUrl;
       speakerIcon.className = "speaker-icon";
       botMessage.appendChild(speakerIcon);
 
+      // Click event listener for speaker icon
       speakerIcon.addEventListener("click", function () {
         fetch("/speak", {
           method: "POST",
@@ -137,6 +138,7 @@ function sendMessageToChat(transcription) {
           });
       });
 
+      // Adjust gauge needle rotation
       document.getElementById(
         "gauge-needle"
       ).style.transform = `rotate(${data.angle}deg)`;
@@ -149,3 +151,18 @@ function sendMessageToChat(transcription) {
       console.error("Error while sending message to chat:", error);
     });
 }
+
+// Handle send button click
+document.getElementById("send-button").onclick = function () {
+  var userInput = document.getElementById("user-input").value;
+  sendMessageToChat(userInput);
+};
+
+// Handle Enter key press in user input
+document
+  .getElementById("user-input")
+  .addEventListener("keypress", function (e) {
+    if (e.key === "Enter") {
+      document.getElementById("send-button").click();
+    }
+  });
